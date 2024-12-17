@@ -1,64 +1,58 @@
-/** 
-* Цвета для категорий 
-*/
-export enum categoryColor {
-  GREEN = '#83FA9D',
-  YELLOW = '#FAD883',
-  PURPLE = '#B783FA',
-  CYAN = '#83DDFA',
-  ORANGE = '#FAA083'
-}
-
-
-/** 
-* Интерфейс товара
-*/
-export interface IProduct {
-  category: string;
-  title: string;
-  price: number | string;
-  image: string;
-  description: string;
-  id: string;
-  isCheked?: boolean;
-  isSale?: boolean;
-}
-
-/** 
- *Интерфейс корзины
+/**
+ * Интерфейс товара
+ * Данные такого типа мы ожидаем от каждого товара.
  */
-export interface IBasket {
-  items: IProduct[];
-  totalPrice: number;
-  itemsCount: number;
+export interface IProduct {
+	category: string;
+	title: string;
+	price: number;
+	image: string;
+	description: string;
+	id: string;
 }
 
-/** 
- * Интерфейс объекта заказа
-*/
-export interface IOrder {
-  id: number | string;
-  paymentType: string;
-  deliveryAdress: string;
-  email: string;
-  phone: number;
-  createdDate: Date;
-  totalPrice: number;
-  isCollected: boolean;
-  isActive: boolean;
+/**
+ * Цвета для категорий товаров
+ */
+export enum categoryColor {
+	GREEN = '#83FA9D',
+	YELLOW = '#FAD883',
+	PURPLE = '#B783FA',
+	CYAN = '#83DDFA',
+	ORANGE = '#FAA083',
 }
 
-/** 
- * Интерефейс модели данных
-*/
+/**
+ * Данные такого типа мы ожидаем на входе.
+ */
 export interface ICatalog {
-  items: IProduct[];
-  total: number; 
+	items: IProduct[];
+	total: number;
+}
+
+/**
+ * Интерфейс объекта заказа.
+ * Данные такого типа мы хотим сформировать и отправить на сервер.
+ */
+export interface IOrder {
+	products: IProduct[];
+	paymentType: string;
+	deliveryAdress: string;
+	email: string;
+	phone: number;
+	totalPrice: number;
 }
 
 /**
  * Интерфейс галереи
  */
 export interface IGallery {
-  gallery: HTMLElement;
+	gallery: HTMLElement;
+}
+
+/**
+ * Интерфейс модального окна
+ */
+export interface IModal {
+	content: HTMLElement;
 }
