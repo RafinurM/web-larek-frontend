@@ -1,5 +1,6 @@
 import { IModal } from '../../types';
 import { ensureElement } from '../../utils/utils';
+import { EventEmitter } from '../base/events';
 import { Component } from './Component';
 
 /**
@@ -8,8 +9,9 @@ import { Component } from './Component';
 export class Modal extends Component<IModal> {
 	protected modalContent: HTMLElement;
 	protected closeButton: HTMLButtonElement;
+	protected modalActions: HTMLElement;
 
-	constructor(container: HTMLElement) {
+	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container);
 		this.modalContent = ensureElement('.modal__content', container);
 		this.closeButton = ensureElement<HTMLButtonElement>(

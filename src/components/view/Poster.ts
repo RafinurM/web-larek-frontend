@@ -1,4 +1,5 @@
 import { ensureElement } from '../../utils/utils';
+import { EventEmitter } from '../base/events';
 import { Component } from './Component';
 
 interface IPoster {
@@ -8,13 +9,11 @@ interface IPoster {
  * Класс отображает успешный успех
  */
 export class Poster extends Component<IPoster> {
-	title: HTMLElement;
 	description: HTMLElement;
 	closeButton: HTMLButtonElement;
 
-	constructor(container: HTMLElement) {
+	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container);
-		this.title = ensureElement<HTMLElement>('.order-success__title', container);
 		this.description = ensureElement<HTMLElement>(
 			'.order-success__description',
 			container
@@ -23,6 +22,14 @@ export class Poster extends Component<IPoster> {
 			'.order-success__close',
 			container
 		);
+
+		this.closeButton.addEventListener('click', () => {
+			events.emit('toModalRestart');
+		})
+	}
+
+	set total(value: number) {
+		this.setText(this.description, `Списано ${value} синапсов`);
 	}
 
 	render(data?: Partial<IPoster>): HTMLElement {

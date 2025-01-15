@@ -19,7 +19,7 @@ export class Gallery extends Component<IGallery> {
 	}
 
 	renderGallery(data: HTMLElement) {
+		// console.log(data)
 		this.catalog.append(data);
-	} // debug here
-	renderBasket() {} // debug here
+	}
 }

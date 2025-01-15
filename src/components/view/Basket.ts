@@ -1,33 +1,43 @@
-import { IProduct } from '../../types';
-import { ensureElement } from '../../utils/utils';
+import { createElement, ensureElement } from '../../utils/utils';
+import { EventEmitter } from '../base/events';
 import { Component } from './Component';
 /**
  * Класс отображения корзины в модальном окне
  */
-export class Basket extends Component<IProduct> {
-	protected _list: HTMLUListElement;
+interface IBasket {
+	items: HTMLElement[];
+	totalPrice: number;
+}
+
+export class Basket extends Component<IBasket> {
+	basketList: HTMLElement;
+	basketPrice?: HTMLElement;
 	orderCreateButton?: HTMLButtonElement;
 
-	constructor(container: HTMLElement) {
+	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container);
-		this._list = ensureElement<HTMLUListElement>('.basket__list', container);
+		this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
+		this.basketPrice = this.container.querySelector('.basket__price');
 		this.orderCreateButton = ensureElement<HTMLButtonElement>(
-			'.basket__button',
-			container
-		);
-
-		// debug here
+			'.basket__button', this.container);
 		this.orderCreateButton.addEventListener('click', () => {
-			console.log('open modal of form');
+			events.emit('basket:toOrder');
 		});
 	}
 
-	set content(value: HTMLElement) {
-		this._list.replaceChildren(value);
+	set items(item: HTMLElement[]) {
+		if (item.length) {
+			this.basketList.replaceChildren(...item);
+		} else {
+			this.basketList.replaceChildren(createElement<HTMLParagraphElement>('p', {
+				textContent: 'Корзина пуста'
+		}));
+		}
 	}
 
-	render(data?: Partial<IProduct>): HTMLElement {
-		super.render(data);
-		return this.container;
+	set totalPrice(value: number) {
+		this.basketPrice.textContent = `${value} синапсов`;
 	}
+
+
 }

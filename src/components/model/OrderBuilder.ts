@@ -25,13 +25,11 @@ export class OrderBuilder {
 		this.order = new Order();
 	}
 
-	get totalPrice() {
+	get totalPrice(): number {
 		return this.order.products.reduce(
 			(sum: number, element: IProduct): number => {
 				return sum + element.price;
-			},
-			0
-		);
+			}, 0);
 	}
 
 	get totalCount() {
@@ -39,8 +37,12 @@ export class OrderBuilder {
 	}
 
 	public addProducts(value: IProduct) {
-		this.order.products.push(value);
-		return this;
+		if (this.order.products.includes(value)) {
+			return
+		} else {
+			this.order.products.push(value);
+		}
+		return this
 	}
 
 	public removeProduct(id: string) {
@@ -72,9 +74,12 @@ export class OrderBuilder {
 
 	// for debugging =======================
 
-	public showOrder() {
-		console.log(this.order);
-		return this;
+	public getOrder() {
+		return this.order;
+	}
+
+	public reset() {
+		return this.order = new Order;
 	}
 	//========================================
 
