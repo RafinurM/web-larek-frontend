@@ -27,7 +27,6 @@ export enum categoryColor {
  */
 export interface ICatalog {
 	items: IProduct[];
-	total: number;
 }
 
 /**

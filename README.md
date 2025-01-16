@@ -92,11 +92,10 @@ interface IOrder {
 ### Данные с сервера
 
 Интерфейс **ICatalog** описывает какой тип данных мы должны получить на входе для приложения. Это те данные, по которым мы отрисовываем главную страницу и каталог товаров. Каталог представляет собой единственный источник информации о товарах в приложении.
-Интерфейс включает в себя: список товаров типа **IProduct** и количество товаров.
+Интерфейс включает в себя: список товаров типа **IProduct**.
 ```
 interface ICatalog {
-  items: IProduct[];
-  itemsCount: number; 
+  items: IProduct[]; 
 }
 ```
 
@@ -114,21 +113,19 @@ interface ICatalog {
 ### Класс Catalog
 
 Данный класс реализует интерфейс **ICatalog** и является источников доступных товаров.
-Имеет поля:
 
+Имеет поле:
 1. **items** - Массив товаров, получаем с сервера. Инициализируется пустым массивом.
-2. **itemsCount** - Количество товаров. Инициализируется нулём.
 
 Конструктор:
 ```
     constructor(data: ICatalog) {
         this.items = data.items;
-        this.itemsCount = data.total;
     } 
 ```
    
 Имеет метод:
-1. **setCatalog(items)** - Устанавливает значения полей.
+1. **setCatalog(items)** - Устанавливает значение поля **this.items**.
 
 ### Класс Order
 
@@ -146,8 +143,8 @@ constructor(
 		public totalPrice: number = 0
 	) {}
 ```
-Эти поля отвечают:
 
+Эти поля отвечают:
 1. **products** - Список товаров, типа **IProduct**.
 2. **paymentType** - Тип оплаты. Не выбран | Онлайн | При получении.
 3. **deliveryAdress** - Адресс доставки.
@@ -160,8 +157,7 @@ constructor(
 Этот класс собирает объект заказа имеющий тип **IOrder**, в котором хранятся все данные о заказе. Объект заказа формируется поэтапно, поэтому здесь применяется паттерн **Builder**, который будет формировать заказ. На выходе мы получаем объект с данными которые ввёл пользователь. По своей сути это и есть корзина.
 *от англ. *builder - строитель*.
 
-Имеет поле:
-
+Имеет поля:
 1. **get totalPrice()** - Геттер, возвращает итоговую сумму товаров в заказе.
 2. **get totalCount()** - Геттер, возвращает количество товаров.
 
@@ -174,14 +170,14 @@ constructor(
 ```
 
 Имеет методы:
-  
-1. **addProducts(value)** - Добавляет товар в заказ. Где аргумент *value* - товар.
+1. **addProducts(value)** - Добавляет товар в заказ. Где аргумент *value* - товар типа **IProduct**.
 2. **removeProduct(id)** - Убирает товар из заказа.
-3. **setPayment()** - Устанавливает тип оплаты.
+3. **setPaymentType()** - Устанавливает тип оплаты.
 4. **setdeliveryAdress()** - Устанавливает адресс доставки.
 5. **setEmail()** - Устанавливает email который введён в форме.
 6. **setPhone()** - Устанавливает моб. номер из формы.
-7. **createOrder()** - Оплатить заказ. Возвращает объект типа **IOrder**.
+7. **getOrder()** - Возвращает текущий заказ.
+8. **reset()** - Обнуляет поля заказа.
 
 ### Слой отображения
 
@@ -189,8 +185,8 @@ constructor(
 
 Класс абстрактный, имеющий базовые методы для работы с DOM-элементами.
 От него наследуем классы для отображения.
-Имеет методы:
 
+Имеет методы:
 1. **toggleClass()** - Переключатель класса.
 2. **setText()**- Устанавливает текстовое содержимое.
 3. **setDisabled()** - Блокировать / разблокировать элемент.
@@ -202,34 +198,53 @@ constructor(
 ### Класс Card extends Component
 
 Класс отрисовывает карточку с товаром.
-Имеет поля:
 
-1. **_title** - Название товара.
-2. **_price** - Цена товара.
-3. **_description** - Описание товара.
-4. **_category** - Категория товара.
-5. **_image** - Изображение товара.
-6. **title** - Сеттер, устанавливает значение поля **_title**.
-7. **price** - Сеттер, устанавливает значение поля **_price**. Если значение 0 - то устанавливает цену "Бесценно".
-8. **description** - Сеттер, устанавливает значение поля **_description**.
-9. **image** - Сеттер, устанавливает значение поля **_image**.
-10. **category** - Сеттер, устанавливает значение поля **_category**.
+Имеет поля:
+1. **protected _title** - Название товара.
+2. **protected _price** - Цена товара.
+3. **protected _description?** - Описание товара. Необязательное поле.
+4. **protected _category?** - Категория товара. Необязательное поле.
+5. **protected _image?** - Изображение товара. Необязательное поле.
+6. **basketIndex?** - Индекс товара для отображения в корзине. Необязательное поле.
+7. **addButton?** - Кнопка добавления в корзину. Необязательное поле.
+8. **deleteButton?** - Кнопка удаления из корзины. Необязательное поле.
+9. **title** - Сеттер, устанавливает значение поля **_title**.
+10. **price** - Сеттер, устанавливает значение поля **_price**. Если значение 0 - то устанавливает цену "Бесценно".
+11. **description** - Сеттер, устанавливает значение поля **_description**.
+12. **image** - Сеттер, устанавливает значение поля **_image**.
+13. **category** - Сеттер, устанавливает значение поля **_category** и цвет категории.
+
 
 Имеет конструктор следующего вида:
 
 ```
-	constructor(container: HTMLElement) {
+	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container);
 		this._title = ensureElement<HTMLElement>('.card__title', container);
 		this._price = ensureElement<HTMLElement>('.card__price', container);
 		this._category = container.querySelector<HTMLElement>('.card__category');
 		this._image = container.querySelector<HTMLImageElement>('.card__image');
 		this._description = container.querySelector<HTMLElement>('.card__text');
+    this.basketIndex = container.querySelector('.basket__item-index');
+		this.addButton = container.querySelector<HTMLButtonElement>('.card__button');
+		this.deleteButton = container.querySelector<HTMLButtonElement>('.basket__item-delete');
+
+		if (this.addButton) {
+			this.addButton.addEventListener('click', () => {
+					events.emit('card:add', this);
+					this.setDisabled(this.addButton, true);		
+			});
+		}
+
+		if (this.deleteButton) {
+			this.deleteButton.addEventListener('click', () => {
+				events.emit('card:remove', this)
+			})
+		}
 	}
 ```
 
 Данный класс имеет метод:
-
 1. **render(data)** - Отрисовывает карточку. Где **data** - данные для отрисовки.
 
 ### Класс Gallery extends Component
@@ -237,24 +252,21 @@ constructor(
 Класс отображает главную страницу приложения. 
 
 Имеет поля:
-
 1. **catalog** - Элемент разметки, где размещаем карточки с товарами.
-2. **basket** - Элемент разметки, где отображаем количество товаров в корзине.
+2. **basketCount** - Элемент разметки, где отображаем количество товаров в корзине.
 
 Конструктор:
 ```
 constructor(container: HTMLElement) {
         super(container);
         this.catalog = ensureElement<HTMLElement>('.gallery', container)
-        this.basket = ensureElement<HTMLSpanElement>('.header__basket-counter', container)
+        this.basketCount = ensureElement<HTMLSpanElement>('.header__basket-counter', container)
     }
 ```
 
-Имеет метод:
-
-1. **renderGallery(data)** - Отрисовывает карточки на главной странице. В качестве аргумента принимает данные, полученные с сервера.
-2. **renderBasket()** - Перерисовывает значок количества товаров на корзине.
-
+Имеет методы:
+1. **renderBasketCount(value)** - Отрисовывает количество товаров в корзине.
+2. **renderGallery(data)** - Отрисовывает карточки на главной странице. В качестве аргумента принимает данные, полученные с сервера.
 
 ### Класс Modal extends Component
 
@@ -271,12 +283,11 @@ constructor(container: HTMLElement){
     super(container);
     this.modalContent = ensureElement('.modal__content', container);
     this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
-    this.closeButton.addEventListener('click', () => this.closeModal()) // for test only
+    this.closeButton.addEventListener('click', () => this.closeModal());
   }
 ```
 
 Имеет методы:
-
 1. **openModal()** - Показывает модальное окно.
 2. **closeModal()** - Закрывает модальное окно.
 3. **render(data)** - Отрисовывает компонент. В качестве аргумента - данные для отрисовки.
@@ -287,36 +298,102 @@ constructor(container: HTMLElement){
 Класс занимается отображением списка товаров в корзине.
 
 Имеет поле:
-1. **_list** - Список элементов **Card** которые находятся в заказе.
-2. **orderCreateButton** - Кнопка "оформить".
-2. **content** - Сеттер, устанавливает список элементов в **_list**.
+1. **basketList** - Список элементов **Card** которые находятся в заказе.
+2. **basketPrice** - Элемент, отображающий сумарную цену товаров в корзине. 
+3. **orderCreateButton** - Кнопка "оформить".
+4. **items** - Сеттер, принимает массив объектов типа **Card** и добавляет в список или выводит что "Корзина пуста".
+5. **totalPrice** - Сеттер, принимает значение типа **number** и выводит на экран общую сумму.
+
 
 Конструктор:
 ```
-constructor(container: HTMLElement){
-        super(container);
-        this._list = ensureElement<HTMLUListElement>('.basket__list', container);
-        this.orderCreateButton = ensureElement<HTMLButtonElement>('.basket__button', container);
+constructor(container: HTMLElement, events: EventEmitter){
+    super(container);
+		this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
+		this.basketPrice = ensureElement<HTMLElement>('.basket__price', this.container);
+		this.orderCreateButton = ensureElement<HTMLButtonElement>(
+			'.basket__button', this.container);
+			
+		this.orderCreateButton.addEventListener('click', () => {
+			events.emit('basket:toOrder');
+		});
     }
 ```
-
-Имеет методы:
-
-1. **render(data)** - Отрисовывает компонент.
 
 ### Класс Form extends Component
 
 Данный класс отвечает за отрисовку, валидацию форм. Соответствует интерфейсу **IForm**
 
 Имеет поля:
-1. **submitButton** - Кнопка "Далее".
-2. **valid** - Сеттер, типа *boolean*. Если **true** то кнопка активна, иначе - неактивна.
+1. **setOnlinePaymentButton?** - Кнопка выбора оплаты "Онлайн". 
+2. **setCashPaymentButton?** - Кнопка выбора оплаты "При получении". 
+3. **deliveryAdressInput?** - Поле ввода адреса доставки. 
+4. **emailInput?** - Поле ввода эл. адреса. 
+5. **phoneInput?** - Поле ввода номера телефона.
+6. **nextButton?** - Кнопка "Далее".
+7. **payButton?** - Кнопка "Оплатить". Для данной кнопки в html-разметку был добавлен класс **pay__button**.
 
 Конструктор:
 ```
-constructor(container: HTMLFormElement) {
-        super(container);
-        this.submitButton = container.querySelector('.order__button')
+constructor(container: HTMLFormElement, events: EventEmitter) {
+    super(container);
+		this.setCashPaymentButton = container.cash;
+		this.setOnlinePaymentButton = container.card;
+		this.deliveryAdressInput = container.address;
+		this.emailInput = container.email;
+		this.phoneInput = container.phone;
+		this.nextButton = container.querySelector('.order__button'); // Кнопка "Далее"
+		this.payButton = container.querySelector('.pay__button'); // Кнопка "Оплатить"
+
+		if (this.setCashPaymentButton) {
+			this.setCashPaymentButton.addEventListener('click', () => {
+				events.emit('order:setCash');
+			});
+		}
+
+		if (this.setOnlinePaymentButton) {
+			this.setOnlinePaymentButton.addEventListener('click', () => {
+				events.emit('order:setCard');
+			});
+		}
+
+		if (this.deliveryAdressInput) {
+			this.deliveryAdressInput.addEventListener('input', () => {
+				events.emit('order:setDeliveryAdress', {
+					deliveryAdress: this?.deliveryAdressInput?.value,
+				});
+			});
+		}
+
+		if (this.emailInput) {
+			this.emailInput.addEventListener('input', () => {
+				events.emit('order:setEmail', {
+					email: this?.emailInput?.value,
+				});
+			});
+		}
+
+		if (this.phoneInput) {
+			this.phoneInput.addEventListener('input', () => {
+				events.emit('order:setPhone', {
+					phone: this?.phoneInput?.value,
+				});
+			});
+		}
+
+		if (this.nextButton) {
+			this.nextButton.addEventListener('click', (event: Event) => {
+				event.preventDefault();
+				events.emit('order:toContacts');
+			});
+		}
+
+		if (this.payButton) {
+			this.payButton.addEventListener('click', (event: Event) => {
+				event.preventDefault();
+				events.emit('order:toSuccess');
+			});
+		}
 }
 ```
 
@@ -330,17 +407,20 @@ constructor(container: HTMLFormElement) {
 Представляет собой модальное окно с итоговой суммой.
 
 Имеет поля:
-1. **title** - Заголовок.
-2. **description** - Информация "Списано N синапсов" - где N - итоговая сумма.
-3. **closeButton** - Кнопка "За новыми покупками".
+1. **description** - Информация "Списано N синапсов" - где N - итоговая сумма.
+2. **closeButton** - Кнопка "За новыми покупками". При клике закрывает модальное окно.
+3. **total** - Сеттер, отображает надпись в элементе **description** со значением **value**.
 
 Конструктор:
 ```
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, events: EventEmitter) {
         super(container);
-        this.title = ensureElement<HTMLElement>('.order-success__title', container);
         this.description = ensureElement<HTMLElement>('.order-success__description', container);
-        this.closeButton = ensureElement<HTMLButtonElement>('.order-success__close', container) 
+        this.closeButton = ensureElement<HTMLButtonElement>('.order-success__close', container);
+
+        this.closeButton.addEventListener('click', () => {
+			  events.emit('modal:close');
+		  }); 
     }
 ```
 
@@ -357,14 +437,17 @@ constructor(container: HTMLFormElement) {
 Отрисовкой модальных окон занимается экземпляр класса **Modal**. При инициализации создаётся экзепляр класса **OrderBuilder**, который в свою очередь создаёт на выходе объект экземпляра класса **Order**.
 
 После инициализации основных объектов, взаимодействие между ними будет происходить через события. Все интерактивные элементы (кнопки, поля ввода)
-будут прослушиватся слушателями событий браузера (**.addEventListener**) и генерировать пользовательские события с использованием класса **EventEmitter**. Данный класс позволяет навешивать, снимать и генерировать события пользовательского типа. Эти события будут обрабатыватся в файле **index.ts**, который и является презентёром в архитетектуре.
+будут прослушиватся слушателями событий браузера (**.addEventListener**) и генерировать пользовательские события с использованием класса **EventEmitter**. Данный класс позволяет слушать, снимать и генерировать события пользовательского типа. Эти события будут обрабатыватся в файле **index.ts**, который и является презентёром в архитетектуре.
 
 ### Пример
 
 ```
 Пользователь кликает по кнопке "Купить" в модальном окне с товаром.
-Кнопка.addEventListener('click', () => здесь генерирует событие emit:*название_события*)
+Кнопка.addEventListener('click', () => здесь генерирует событие emit('card:add'))
 
-В файле index.ts эти события прослушиваются через EventEmitter.on(*называние_события*, callback)
+В файле index.ts эти события прослушиваются через EventEmitter.on('card:add', callback).
+Далее это событие вызывает изменение в модели данных builder. В модель данных добавляется товар через метод изменения данных builder.addProduct(product).
+После того, как товар был добавлен, в методе builder.addProduct(product), мы вызываем событие, которое говорит что произошло изменение в модели данных.
+Это событие так же прослушивается нашим презентёром index.ts - events.on('card:added', callback), где он уже обновляет отрисовку, согласно новым данным.
 ```
 

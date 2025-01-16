@@ -1,4 +1,5 @@
 import { IOrder, IProduct } from '../../types';
+import { EventEmitter } from '../base/events';
 
 /**
  * Класс заказа.
@@ -21,15 +22,19 @@ class Order implements IOrder {
 
 export class OrderBuilder {
 	private order: Order;
-	constructor() {
+	protected events: EventEmitter;
+	constructor(events: EventEmitter) {
 		this.order = new Order();
+		this.events = events;
 	}
 
 	get totalPrice(): number {
 		return this.order.products.reduce(
 			(sum: number, element: IProduct): number => {
 				return sum + element.price;
-			}, 0);
+			},
+			0
+		);
 	}
 
 	get totalCount() {
@@ -38,22 +43,25 @@ export class OrderBuilder {
 
 	public addProducts(value: IProduct) {
 		if (this.order.products.includes(value)) {
-			return
+			return;
 		} else {
 			this.order.products.push(value);
+			this.events.emit('card:added');
 		}
-		return this
+		return this;
 	}
 
 	public removeProduct(id: string) {
 		this.order.products = this.order.products.filter((item: IProduct) => {
 			return item.id !== id;
 		});
+		this.events.emit('card:removed');
 		return this;
 	}
 
 	public setPaymentType(value: string) {
 		this.order.paymentType = value;
+		this.events.emit('paymentType:changed');
 		return this;
 	}
 
@@ -72,18 +80,13 @@ export class OrderBuilder {
 		return this;
 	}
 
-	// for debugging =======================
-
 	public getOrder() {
 		return this.order;
 	}
 
 	public reset() {
-		return this.order = new Order;
-	}
-	//========================================
-
-	public createOrder(): IOrder {
+		this.order = new Order();
+		this.events.emit('data:reset');
 		return this.order;
 	}
 }

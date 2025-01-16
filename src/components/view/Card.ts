@@ -1,4 +1,4 @@
-import { IProduct } from '../../types';
+import { categoryColor, IProduct } from '../../types';
 import { CDN_URL } from '../../utils/constants';
 import { ensureElement } from '../../utils/utils';
 import { EventEmitter } from '../base/events';
@@ -25,19 +25,23 @@ export class Card extends Component<IProduct> {
 		this._image = container.querySelector<HTMLImageElement>('.card__image');
 		this._description = container.querySelector<HTMLElement>('.card__text');
 		this.basketIndex = container.querySelector('.basket__item-index');
-		this.addButton = container.querySelector<HTMLButtonElement>('.card__button');
-		this.deleteButton = container.querySelector<HTMLButtonElement>('.basket__item-delete');
+		this.addButton =
+			container.querySelector<HTMLButtonElement>('.card__button');
+		this.deleteButton = container.querySelector<HTMLButtonElement>(
+			'.basket__item-delete'
+		);
+
 		if (this.addButton) {
 			this.addButton.addEventListener('click', () => {
-					events.emit('card:add', this);
-					this.setDisabled(this.addButton, true);		
+				events.emit('card:add', this);
+				this.setDisabled(this.addButton, true); // добавили в корзину -> кнопку выключили
 			});
 		}
 
 		if (this.deleteButton) {
 			this.deleteButton.addEventListener('click', () => {
-				events.emit('card:remove', this)
-			})
+				events.emit('card:remove', this);
+			});
 		}
 	}
 
@@ -54,8 +58,31 @@ export class Card extends Component<IProduct> {
 	}
 
 	set category(value: string) {
-		
-		this.setText(this._category, value);
+		this.setText(this._category, value); // текст категории
+		// category color v1 - case with types
+		this._category?.classList.remove('card__category_soft'); // remove default class if present
+		if (this._category) {
+			switch (value) {
+				case 'софт-скил':
+					this._category.style.backgroundColor = categoryColor.GREEN;
+					break;
+				case 'другое':
+					this._category.style.backgroundColor = categoryColor.YELLOW;
+					break;
+				case 'дополнительное':
+					this._category.style.backgroundColor = categoryColor.PURPLE;
+					break;
+				case 'кнопка':
+					this._category.style.backgroundColor = categoryColor.CYAN;
+					break;
+				case 'хард-скил':
+					this._category.style.backgroundColor = categoryColor.ORANGE;
+					break;
+				default:
+					this._category.style.backgroundColor = categoryColor.GREEN;
+					break;
+			}
+		}
 	}
 
 	set image(value: string) {

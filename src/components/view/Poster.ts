@@ -5,9 +5,11 @@ import { Component } from './Component';
 interface IPoster {
 	total: string;
 }
+
 /**
  * Класс отображает успешный успех
  */
+
 export class Poster extends Component<IPoster> {
 	description: HTMLElement;
 	closeButton: HTMLButtonElement;
@@ -24,8 +26,8 @@ export class Poster extends Component<IPoster> {
 		);
 
 		this.closeButton.addEventListener('click', () => {
-			events.emit('toModalRestart');
-		})
+			events.emit('modal:close');
+		});
 	}
 
 	set total(value: number) {

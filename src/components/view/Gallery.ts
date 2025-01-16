@@ -2,24 +2,27 @@
  * Класс для отображения галереи
  */
 
-import { IGallery, IProduct } from '../../types';
+import { IGallery } from '../../types';
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../view/Component';
 
 export class Gallery extends Component<IGallery> {
 	catalog: HTMLElement;
-	basket: HTMLElement;
+	basketCount: HTMLElement;
 	constructor(container: HTMLElement) {
 		super(container);
 		this.catalog = ensureElement<HTMLElement>('.gallery', container);
-		this.basket = ensureElement<HTMLSpanElement>(
+		this.basketCount = ensureElement<HTMLSpanElement>(
 			'.header__basket-counter',
 			container
 		);
 	}
 
+	renderBasketCount(value: number) {
+		this.setText(this.basketCount, value);
+	}
+
 	renderGallery(data: HTMLElement) {
-		// console.log(data)
 		this.catalog.append(data);
 	}
 }
