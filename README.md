@@ -51,7 +51,7 @@ yarn build
  interface IProduct {
   category: string;
   title: string;
-  price: number | string;
+  price: number;
   image: string;
   description: string;
   id: string;
@@ -80,12 +80,12 @@ enum categoryColor {
 
 ```
 interface IOrder {
-  products: string[];
-  paymentType: string;
-  deliveryAdress: string;
-  email: string;
-  phone: number;
-  totalPrice: number;
+	items: string[];
+	payment: string;
+	address: string;
+	email: string;
+	phone: number;
+	total: number;
 }
 ```
 
@@ -146,7 +146,7 @@ constructor(
 
 Эти поля отвечают:
 1. **items** - Список id товаров.
-2. **payment** - Тип оплаты. Не выбран | Онлайн | При получении.
+2. **payment** - Тип оплаты. *пустая строка* | Онлайн | При получении.
 3. **address** - Адресс доставки.
 4. **email** - Электронный адресс получателя.
 5. **phone** - Мобильный номер для связи.
@@ -177,7 +177,7 @@ constructor(
 5. **setEmail()** - Устанавливает email который введён в форме.
 6. **setPhone()** - Устанавливает моб. номер из формы.
 7. **getOrder()** - Возвращает текущий заказ.
-8. **setTotal(appData.items)** - Считает сумму товаров.
+8. **setTotal(appData.items)** - Считает сумму товаров. Устанавливает значение поля *total* в возвращаемом классе Order.
 9. **reset()** - Обнуляет поля заказа.
 
 ### Слой отображения
@@ -301,24 +301,40 @@ constructor(container: HTMLElement){
 Имеет поле:
 1. **basketList** - Список элементов **Card** которые находятся в заказе.
 2. **basketPrice** - Элемент, отображающий сумарную цену товаров в корзине. 
-3. **orderCreateButton** - Кнопка "оформить".
-4. **items** - Сеттер, принимает массив объектов типа **Card** и добавляет в список или выводит что "Корзина пуста".
-5. **totalPrice** - Сеттер, принимает значение типа **number** и выводит на экран общую сумму.
+3. **basketIcon** - Элемент, отображающий иконку корзины.
+4. **orderCreateButton** - Кнопка "оформить".
+5. **items** - Сеттер, принимает массив объектов типа **Card** и добавляет в список или выводит что "Корзина пуста".
+6. **totalPrice** - Сеттер, принимает значение типа **number** и выводит на экран общую сумму.
 
 
 Конструктор:
 ```
-constructor(container: HTMLElement, events: EventEmitter){
-    super(container);
-		this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
-		this.basketPrice = ensureElement<HTMLElement>('.basket__price', this.container);
+constructor(container: HTMLElement, events: EventEmitter) {
+		super(container);
+		this.basketList = ensureElement<HTMLElement>(
+			'.basket__list',
+			this.container
+		);
+		this.basketPrice = ensureElement<HTMLElement>(
+			'.basket__price',
+			this.container
+		);
+		this.basketIcon = ensureElement<HTMLElement>(
+			'.header__basket'
+		);
 		this.orderCreateButton = ensureElement<HTMLButtonElement>(
-			'.basket__button', this.container);
-			
+			'.basket__button',
+			this.container
+		);
+
+		this.basketIcon.addEventListener('click', () => {
+			events.emit('basket:open');
+		});
+
 		this.orderCreateButton.addEventListener('click', () => {
 			events.emit('basket:toOrder');
 		});
-    }
+	}
 ```
 
 ### Класс Form extends Component

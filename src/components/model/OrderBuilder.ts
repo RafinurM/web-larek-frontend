@@ -76,10 +76,9 @@ export class OrderBuilder {
 	}
 
 	public setTotal(products: IProduct[]) {
-		let productsArr = products.filter((item) => {
+		const productsArr = products.filter((item) => {
 			return this.order.items.includes(item.id);
 		});
-
 		return (this.order.total = productsArr.reduce(
 			(sum: number, element: IProduct): number => {
 				return sum + element.price;

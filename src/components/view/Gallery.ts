@@ -5,6 +5,7 @@
 import { IGallery } from '../../types';
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../view/Component';
+import { Card } from './Card';
 
 export class Gallery extends Component<IGallery> {
 	catalog: HTMLElement;
@@ -22,7 +23,7 @@ export class Gallery extends Component<IGallery> {
 		this.setText(this.basketCount, value);
 	}
 
-	renderGallery(data: HTMLElement) {
-		this.catalog.append(data);
+	renderGallery(cards: HTMLElement[]) {
+		this.catalog.replaceChildren(...cards)
 	}
 }

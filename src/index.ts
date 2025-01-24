@@ -30,7 +30,7 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // Экземпляры
 const api = new Api(API_URL); // API_URL - base url for requests
-const events = new EventEmitter();
+const events = new EventEmitter(); // брокер событий
 const order = new OrderBuilder(events); // Корзина data
 const pageWrapper: HTMLElement = ensureElement('.page__wrapper');
 const gallery = new Gallery(pageWrapper);
@@ -53,7 +53,7 @@ api
 	.then((data) => data as ICatalog)
 	.then((responce) => {
 		appData.setCatalog(responce.items);
-		appData.items.forEach((item) => {
+		const cards = appData.items.map((item) => {
 			const card = new Card(cloneTemplate(cardTemplate), events);
 			if (!item.price) {
 				item.price = 0;
@@ -61,8 +61,9 @@ api
 			card.render().addEventListener('click', () => {
 				events.emit('card:open', item);
 			});
-			gallery.renderGallery(card.render(item));
+			return card.render(item);
 		});
+		gallery.renderGallery(cards);
 	})
 	.catch((error) => {
 		console.error(error);
@@ -127,8 +128,8 @@ events.on('basket:update', () => {
 	basketWindow.items = order.getOrder().items.map((item, index) => {
 		const card = new Card(cloneTemplate(cardBasketItemTemplate), events);
 		card.basketIndex.textContent = `${index + 1}`;
-		const c = appData.items.find((product) => product.id === item);
-		return card.render(c);
+		const cardBasket = appData.items.find((product) => product.id === item);
+		return card.render(cardBasket);
 	});
 });
 
@@ -214,7 +215,8 @@ events.on('modal:close', () => {
 
 // отправляем заказ, отрисовываем постер успешный успех  или выдаём ошибку, сбрасываем заказ
 events.on('order:sent', () => {
-	appData.items.find((product) => { // проверяем есть ли бесценный товар и убираем
+	appData.items.find((product) => {
+		// проверяем есть ли бесценный товар и убираем
 		if (!product.price) {
 			order.removeProduct(product.id);
 		}
