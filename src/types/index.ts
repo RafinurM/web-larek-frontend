@@ -34,12 +34,12 @@ export interface ICatalog {
  * Данные такого типа мы хотим сформировать и отправить на сервер.
  */
 export interface IOrder {
-	products: IProduct[];
-	paymentType: string;
-	deliveryAdress: string;
+	items: string[];
+	payment: string;
+	address: string;
 	email: string;
 	phone: number;
-	totalPrice: number;
+	total: number;
 }
 
 /**

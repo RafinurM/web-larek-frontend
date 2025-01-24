@@ -3,6 +3,7 @@ import { ICatalog, IProduct } from '../../types';
 /**
  * Класс предоставляет данные для отображения.
  */
+
 export class Catalog {
 	items: IProduct[] = [];
 	constructor(data: ICatalog) {
@@ -11,6 +12,4 @@ export class Catalog {
 	public setCatalog(items: IProduct[]) {
 		this.items = items;
 	}
-
-	
 }

@@ -1,3 +1,4 @@
+import { IOrder } from '../../types';
 import { EventEmitter } from '../base/events';
 import { Component } from './Component';
 
@@ -11,7 +12,7 @@ interface IForm {
 export class Form extends Component<IForm> {
 	setOnlinePaymentButton?: HTMLButtonElement;
 	setCashPaymentButton?: HTMLButtonElement;
-	deliveryAdressInput?: HTMLInputElement;
+	addressInput?: HTMLInputElement;
 	emailInput?: HTMLInputElement;
 	phoneInput?: HTMLInputElement;
 	nextButton?: HTMLButtonElement;
@@ -21,7 +22,7 @@ export class Form extends Component<IForm> {
 		super(container);
 		this.setCashPaymentButton = container.cash;
 		this.setOnlinePaymentButton = container.card;
-		this.deliveryAdressInput = container.address;
+		this.addressInput = container.address;
 		this.emailInput = container.email;
 		this.phoneInput = container.phone;
 		this.nextButton = container.querySelector('.order__button'); // Кнопка "Далее"
@@ -39,10 +40,10 @@ export class Form extends Component<IForm> {
 			});
 		}
 
-		if (this.deliveryAdressInput) {
-			this.deliveryAdressInput.addEventListener('input', () => {
+		if (this.addressInput) {
+			this.addressInput.addEventListener('input', () => {
 				events.emit('order:setDeliveryAdress', {
-					deliveryAdress: this?.deliveryAdressInput?.value,
+					address: this?.addressInput?.value,
 				});
 			});
 		}
@@ -73,8 +74,39 @@ export class Form extends Component<IForm> {
 		if (this.payButton) {
 			this.payButton.addEventListener('click', (event: Event) => {
 				event.preventDefault();
-				events.emit('order:toSuccess');
+				events.emit('order:sent');
 			});
+		}
+	}
+
+	resetForm(order: IOrder) {
+		if (this.setCashPaymentButton) {
+			this.setCashPaymentButton.classList.remove('button_alt-active');
+		}
+		if (this.setOnlinePaymentButton) {
+			this.setOnlinePaymentButton.classList.remove('button_alt-active');
+		}
+		if (this.emailInput) {
+			this.emailInput.value = order.email;
+		}
+		if (this.addressInput) {
+			this.addressInput.value = order.address;
+		}
+		if (this.phoneInput) {
+			this.phoneInput.value = order.phone.toString();
+		}
+
+		this.setDisabled(this.nextButton, true);
+		this.setDisabled(this.payButton, true);
+	}
+
+	buttonChange(order: IOrder) {
+		if (order.payment === 'При получении') {
+			this.setCashPaymentButton.classList.add('button_alt-active');
+			this.setOnlinePaymentButton.classList.remove('button_alt-active');
+		} else {
+			this.setCashPaymentButton.classList.remove('button_alt-active');
+			this.setOnlinePaymentButton.classList.add('button_alt-active');
 		}
 	}
 

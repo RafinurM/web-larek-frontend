@@ -25,6 +25,7 @@ export class Modal extends Component<IModal> {
 
 	openModal() {
 		this.container.classList.add('modal_active');
+		this.container.style.position = 'fixed'; 
 	}
 
 	closeModal() {

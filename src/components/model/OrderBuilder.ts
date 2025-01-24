@@ -6,12 +6,12 @@ import { EventEmitter } from '../base/events';
  */
 class Order implements IOrder {
 	constructor(
-		public products: IProduct[] = [],
-		public paymentType: string = '',
-		public deliveryAdress: string = '',
+		public items: string[] = [],
+		public payment: string = '',
+		public address: string = '',
 		public email: string = '',
 		public phone: number = 0,
-		public totalPrice: number = 0
+		public total: number = 0
 	) {}
 }
 
@@ -28,45 +28,36 @@ export class OrderBuilder {
 		this.events = events;
 	}
 
-	get totalPrice(): number {
-		return this.order.products.reduce(
-			(sum: number, element: IProduct): number => {
-				return sum + element.price;
-			},
-			0
-		);
-	}
-
 	get totalCount() {
-		return this.order.products.length;
+		return this.order.items.length;
 	}
 
-	public addProducts(value: IProduct) {
-		if (this.order.products.includes(value)) {
+	public addProducts(id: string) {
+		if (this.order.items.includes(id)) {
 			return;
 		} else {
-			this.order.products.push(value);
+			this.order.items.push(id);
 			this.events.emit('card:added');
 		}
 		return this;
 	}
 
 	public removeProduct(id: string) {
-		this.order.products = this.order.products.filter((item: IProduct) => {
-			return item.id !== id;
+		this.order.items = this.order.items.filter((item: string) => {
+			return item !== id;
 		});
 		this.events.emit('card:removed');
 		return this;
 	}
 
 	public setPaymentType(value: string) {
-		this.order.paymentType = value;
+		this.order.payment = value;
 		this.events.emit('paymentType:changed');
 		return this;
 	}
 
 	public setDeliveryAdress(value: string) {
-		this.order.deliveryAdress = value;
+		this.order.address = value;
 		return this;
 	}
 
@@ -82,6 +73,19 @@ export class OrderBuilder {
 
 	public getOrder() {
 		return this.order;
+	}
+
+	public setTotal(products: IProduct[]) {
+		let productsArr = products.filter((item) => {
+			return this.order.items.includes(item.id);
+		});
+
+		return (this.order.total = productsArr.reduce(
+			(sum: number, element: IProduct): number => {
+				return sum + element.price;
+			},
+			0
+		));
 	}
 
 	public reset() {

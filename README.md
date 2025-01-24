@@ -76,11 +76,11 @@ enum categoryColor {
 ### Объект заказа
 
 Следующие данные - это данные о заказе, которые вводит пользователь, а приложение собирает в объект и отправляет на сервер. По своей сути это и есть корзина.
-Включает в себя: уникальный идентификатор заказа, тип оплаты, адрес доставки, электронный адрес, моб. номер для связи, сумма заказа.
+Включает в себя: массив уникальных идентификаторов заказа (id), тип оплаты, адрес доставки, электронный адрес, моб. номер для связи, сумма заказа.
 
 ```
 interface IOrder {
-  products: IProduct[];
+  products: string[];
   paymentType: string;
   deliveryAdress: string;
   email: string;
@@ -135,49 +135,50 @@ interface ICatalog {
 
 ```
 constructor(
-		public products: IProduct[] = [],
-		public paymentType: string = '',
-		public deliveryAdress: string = '',
+		public items: string[] = [],
+		public payment: string = '',
+		public address: string = '',
 		public email: string = '',
 		public phone: number = 0,
-		public totalPrice: number = 0
+		public total: number = 0,
 	) {}
 ```
 
 Эти поля отвечают:
-1. **products** - Список товаров, типа **IProduct**.
-2. **paymentType** - Тип оплаты. Не выбран | Онлайн | При получении.
-3. **deliveryAdress** - Адресс доставки.
+1. **items** - Список id товаров.
+2. **payment** - Тип оплаты. Не выбран | Онлайн | При получении.
+3. **address** - Адресс доставки.
 4. **email** - Электронный адресс получателя.
 5. **phone** - Мобильный номер для связи.
-6. **totalPrice** - Сумма заказа.
+6. **total** - Сумма заказа.
 
 ### Класс OrderBuilder
 
 Этот класс собирает объект заказа имеющий тип **IOrder**, в котором хранятся все данные о заказе. Объект заказа формируется поэтапно, поэтому здесь применяется паттерн **Builder**, который будет формировать заказ. На выходе мы получаем объект с данными которые ввёл пользователь. По своей сути это и есть корзина.
 *от англ. *builder - строитель*.
 
-Имеет поля:
-1. **get totalPrice()** - Геттер, возвращает итоговую сумму товаров в заказе.
-2. **get totalCount()** - Геттер, возвращает количество товаров.
+Имеет поле:
+1. **get totalCount()** - Геттер, возвращает количество товаров.
 
 Конструктор следующий:
 
 ```
-	constructor() {
+	constructor(events: EventEmitter) {
 		this.order = new Order();
+		this.events = events;
 	}
 ```
 
 Имеет методы:
-1. **addProducts(value)** - Добавляет товар в заказ. Где аргумент *value* - товар типа **IProduct**.
+1. **addProducts(id)** - Добавляет товар в заказ. Где аргумент *value* - id товара.
 2. **removeProduct(id)** - Убирает товар из заказа.
 3. **setPaymentType()** - Устанавливает тип оплаты.
 4. **setdeliveryAdress()** - Устанавливает адресс доставки.
 5. **setEmail()** - Устанавливает email который введён в форме.
 6. **setPhone()** - Устанавливает моб. номер из формы.
 7. **getOrder()** - Возвращает текущий заказ.
-8. **reset()** - Обнуляет поля заказа.
+8. **setTotal(appData.items)** - Считает сумму товаров.
+9. **reset()** - Обнуляет поля заказа.
 
 ### Слой отображения
 
@@ -399,6 +400,8 @@ constructor(container: HTMLFormElement, events: EventEmitter) {
 
 Класс имеет методы:
 1. **render(data)** - Отрисовывает компонент с переданными значениями.
+2. **resetForm(order)** - Сбрасывает форму.
+3. **buttonChange(order)** - Метод переключения кнопок.
 
 
 ### Класс Poster extends Component
