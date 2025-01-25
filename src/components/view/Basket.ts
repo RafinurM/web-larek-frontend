@@ -6,7 +6,7 @@ import { Component } from './Component';
  */
 interface IBasket {
 	items: HTMLElement[];
-	totalPrice: number;
+	totalPrice: string;
 }
 
 export class Basket extends Component<IBasket> {
@@ -14,6 +14,7 @@ export class Basket extends Component<IBasket> {
 	basketPrice: HTMLElement;
 	basketIcon: HTMLElement;
 	orderCreateButton?: HTMLButtonElement;
+	protected _items: HTMLElement[] = [];
 
 	constructor(container: HTMLElement, events: EventEmitter) {
 		super(container);
@@ -25,9 +26,7 @@ export class Basket extends Component<IBasket> {
 			'.basket__price',
 			this.container
 		);
-		this.basketIcon = ensureElement<HTMLElement>(
-			'.header__basket'
-		);
+		this.basketIcon = ensureElement<HTMLElement>('.header__basket');
 		this.orderCreateButton = ensureElement<HTMLButtonElement>(
 			'.basket__button',
 			this.container
@@ -40,18 +39,26 @@ export class Basket extends Component<IBasket> {
 		this.orderCreateButton.addEventListener('click', () => {
 			events.emit('basket:toOrder');
 		});
+
+		this.setDisabled(this.orderCreateButton, true); // default off
 	}
 
 	set items(item: HTMLElement[]) {
 		if (item.length) {
 			this.basketList.replaceChildren(...item);
+			this._items = item;
 		} else {
+			this._items = [];
 			this.basketList.replaceChildren(
 				createElement<HTMLParagraphElement>('p', {
 					textContent: 'Корзина пуста',
 				})
 			);
 		}
+	}
+
+	get items() {
+		return this._items;
 	}
 
 	set totalPrice(value: number) {

@@ -17,6 +17,7 @@ export class Form extends Component<IForm> {
 	phoneInput?: HTMLInputElement;
 	nextButton?: HTMLButtonElement;
 	payButton?: HTMLButtonElement;
+	formErrors: HTMLSpanElement;
 
 	constructor(container: HTMLFormElement, events: EventEmitter) {
 		super(container);
@@ -27,6 +28,7 @@ export class Form extends Component<IForm> {
 		this.phoneInput = container.phone;
 		this.nextButton = container.querySelector('.order__button'); // Кнопка "Далее"
 		this.payButton = container.querySelector('.pay__button'); // Кнопка "Оплатить"
+		this.formErrors = container.querySelector('.form__errors'); // ошибки
 
 		if (this.setCashPaymentButton) {
 			this.setCashPaymentButton.addEventListener('click', () => {
@@ -100,14 +102,24 @@ export class Form extends Component<IForm> {
 		this.setDisabled(this.payButton, true);
 	}
 
-	buttonChange(order: IOrder) {
-		if (order.payment === 'При получении') {
-			this.setCashPaymentButton.classList.add('button_alt-active');
-			this.setOnlinePaymentButton.classList.remove('button_alt-active');
-		} else {
-			this.setCashPaymentButton.classList.remove('button_alt-active');
-			this.setOnlinePaymentButton.classList.add('button_alt-active');
+	setPaymentType(order: IOrder) {
+		switch (order.payment) {
+			case 'При получении':
+				this.setCashPaymentButton.classList.add('button_alt-active');
+				this.setOnlinePaymentButton.classList.remove('button_alt-active');
+				break;
+			case 'Онлайн':
+				this.setCashPaymentButton.classList.remove('button_alt-active');
+				this.setOnlinePaymentButton.classList.add('button_alt-active');
+				break;
+			default:
+				this.setCashPaymentButton.classList.remove('button_alt-active');
+				this.setOnlinePaymentButton.classList.remove('button_alt-active');
 		}
+	}
+
+	setErrorMessage(message: string) {
+		this.setText(this.formErrors, message);
 	}
 
 	render(data?: IForm): HTMLElement {

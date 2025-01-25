@@ -116,16 +116,18 @@ interface ICatalog {
 
 Имеет поле:
 1. **items** - Массив товаров, получаем с сервера. Инициализируется пустым массивом.
+2. **events** - Брокер событий.
 
 Конструктор:
 ```
-    constructor(data: ICatalog) {
+    constructor(data: ICatalog, events: EventEmitter) {
         this.items = data.items;
+				this.events = events;
     } 
 ```
    
-Имеет метод:
-1. **setCatalog(items)** - Устанавливает значение поля **this.items**.
+Имеет методы:
+1. **setCatalog(items)** - Устанавливает значение поля **this.items**.  Сообщает *catalog:created* при успешном создании каталога.
 
 ### Класс Order
 
@@ -178,7 +180,8 @@ constructor(
 6. **setPhone()** - Устанавливает моб. номер из формы.
 7. **getOrder()** - Возвращает текущий заказ.
 8. **setTotal(appData.items)** - Считает сумму товаров. Устанавливает значение поля *total* в возвращаемом классе Order.
-9. **reset()** - Обнуляет поля заказа.
+9. **validation()** - Валидирует данные, и генерирует событие которое уведомляет об валидности.
+10. **reset()** - Обнуляет поля заказа.
 
 ### Слой отображения
 
@@ -299,12 +302,13 @@ constructor(container: HTMLElement){
 Класс занимается отображением списка товаров в корзине.
 
 Имеет поле:
-1. **basketList** - Список элементов **Card** которые находятся в заказе.
+1. **basketList** - Элемент, отображающий список **Card** которые находятся в заказе.
 2. **basketPrice** - Элемент, отображающий сумарную цену товаров в корзине. 
 3. **basketIcon** - Элемент, отображающий иконку корзины.
-4. **orderCreateButton** - Кнопка "оформить".
-5. **items** - Сеттер, принимает массив объектов типа **Card** и добавляет в список или выводит что "Корзина пуста".
-6. **totalPrice** - Сеттер, принимает значение типа **number** и выводит на экран общую сумму.
+4. **orderCreateButton** - Кнопка "оформить". По умолчанию *disabled*.
+5. **items** - Сеттер/Геттер, принимает массив объектов типа **Card** и добавляет в список или выводит что "Корзина пуста". Возвращает список **_items**.
+6. **protected _items** - Внутренне свойство, хранит в себе массив карточек.
+7. **totalPrice** - Сеттер, принимает значение типа **number** и выводит на экран общую сумму.
 
 
 Конструктор:
@@ -334,6 +338,8 @@ constructor(container: HTMLElement, events: EventEmitter) {
 		this.orderCreateButton.addEventListener('click', () => {
 			events.emit('basket:toOrder');
 		});
+
+		this.setDisabled(this.orderCreateButton, true);
 	}
 ```
 
@@ -417,7 +423,8 @@ constructor(container: HTMLFormElement, events: EventEmitter) {
 Класс имеет методы:
 1. **render(data)** - Отрисовывает компонент с переданными значениями.
 2. **resetForm(order)** - Сбрасывает форму.
-3. **buttonChange(order)** - Метод переключения кнопок.
+3. **setPaymentType(order)** - Метод, управляет отображением выбора кнопок оплаты.
+4. **setErrorMessage(value)** - Устанвливает текст с ошибкой.
 
 
 ### Класс Poster extends Component

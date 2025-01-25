@@ -1,4 +1,5 @@
 import { ICatalog, IProduct } from '../../types';
+import { EventEmitter } from '../base/events';
 
 /**
  * Класс предоставляет данные для отображения.
@@ -6,10 +7,13 @@ import { ICatalog, IProduct } from '../../types';
 
 export class Catalog {
 	items: IProduct[] = [];
-	constructor(data: ICatalog) {
+	events: EventEmitter;
+	constructor(data: ICatalog, events: EventEmitter) {
 		this.items = data.items;
+		this.events = events;
 	}
 	public setCatalog(items: IProduct[]) {
 		this.items = items;
+		this.events.emit('catalog:created');
 	}
 }

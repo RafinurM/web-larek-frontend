@@ -52,22 +52,26 @@ export class OrderBuilder {
 
 	public setPaymentType(value: string) {
 		this.order.payment = value;
+		this.validation();
 		this.events.emit('paymentType:changed');
 		return this;
 	}
 
 	public setDeliveryAdress(value: string) {
 		this.order.address = value;
+		this.validation();
 		return this;
 	}
 
 	public setEmail(value: string) {
 		this.order.email = value;
+		this.validation();
 		return this;
 	}
 
 	public setPhone(value: number) {
 		this.order.phone = value;
+		this.validation();
 		return this;
 	}
 
@@ -87,9 +91,38 @@ export class OrderBuilder {
 		));
 	}
 
-	public reset() {
+	public validation() {
+		const errorMessages = {
+			payment: 'Пожалуйста, выберите способ оплаты',
+			address: 'Пожалуйста, укажите адрес доставки',
+			email: 'Пожалуйста, укажите электронную почту',
+			phone: 'Пожалуйста, укажите контактный телефон',
+		};
+
+		if (!this.order.payment) {
+			this.events.emit('formPayment:invalid', errorMessages);
+		}
+		if (!this.order.address) {
+			this.events.emit('formAddress:invalid', errorMessages);
+		}
+		if (!this.order.phone) {
+			this.events.emit('formPhone:invalid', errorMessages);
+		}
+		if (!this.order.email) {
+			this.events.emit('formEmail:invalid', errorMessages);
+		}
+		if (this.order.payment && this.order.address) {
+			this.events.emit('orderForm:valid');
+		}
+		if (this.order.email && this.order.phone) {
+			this.events.emit('contactsForm:valid');
+		}
+	}
+
+	public resetOrder() {
 		this.order = new Order();
-		this.events.emit('data:reset');
+		this.events.emit('model:reseted');
+		this.events.emit('basket:update');
 		return this.order;
 	}
 }
